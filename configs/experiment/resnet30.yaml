@@ -1,0 +1,6 @@
+defaults:
+  - resnet30_schema
+
+model: resnet30
+batch_size: 256
+nrof_epochs: 200

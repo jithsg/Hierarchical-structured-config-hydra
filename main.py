@@ -1,39 +1,35 @@
 import hydra
-from omegaconf import DictConfig, OmegaConf
-from dataclasses import dataclass, field
+from omegaconf import DictConfig, OmegaConf, MISSING
+from pydantic.dataclasses import dataclass
+from typing import Any
 
 from hydra.core.config_store import ConfigStore
 #import default_factory
 
+@dataclass
+class ExperimentSchema:
+    model: str = MISSING
+    nrof_epochs: int = 10
+    learning_rate: float = 0.001
 
 @dataclass
-class ExperimentConfig:
-    name: str = "resnet18"
-    epochs: int = 100
-    batch_size: int = 32
-    
+class Resnet18ConfigSchema(ExperimentSchema):
+    model: str = "resnet18"
 @dataclass
-class OptimizerConfig:
-    name: str = "sgd"
-    lr: float = .01
-    momentum: float = 0.9
-    
-
+class Resnet30ConfigSchema(ExperimentSchema):
+    model: str = "resnet30"
+ 
 @dataclass
-class MyConfig:
-    experiment: ExperimentConfig = field(default_factory=ExperimentConfig)
-    optimizer: OptimizerConfig = field(default_factory=OptimizerConfig)
+class ConfigSchema:
+    experiment: Any
     
+cs= ConfigStore.instance()
 
-cs = ConfigStore.instance()
-# cs.store(name="config", node=ExperimentConfig)
-# cs.store(name="sgd", node=OptimizerConfig)
-cs.store(name="config", node=MyConfig)
+cs.store(name="config_schema", node=ConfigSchema)
+cs.store(group="experiment", name="resnet18_schema", node=Resnet18ConfigSchema)
+cs.store(group="experiment", name="resnet30_schema", node=Resnet30ConfigSchema)
 
-
-
-
-@hydra.main(config_path="", config_name="config", version_base=None)
+@hydra.main(config_path="configs", config_name="config", version_base=None)
 def main(cfg: DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg))
 

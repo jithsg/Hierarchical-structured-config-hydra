@@ -1,0 +1,5 @@
+defaults:
+  - resnet18_schema
+
+model: resnet18
+nrof_epochs:  10
